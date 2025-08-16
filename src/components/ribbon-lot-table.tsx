@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { RibbonLotDetailsModal } from "./ribbon-lot-details-modal";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,9 @@ interface RibbonLotTableProps {
 }
 
 export function RibbonLotTable({ lots, onEdit, onDelete, onView }: RibbonLotTableProps) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedLot, setSelectedLot] = useState<(RibbonLot & { imageBase64?: string }) | null>(null);
+
   const getStatusVariant = (status: string) => {
     switch (status) {
       case 'active':
@@ -41,7 +45,7 @@ export function RibbonLotTable({ lots, onEdit, onDelete, onView }: RibbonLotTabl
   };
 
   return (
-    <div className="rounded-lg border border-border shadow-card bg-card overflow-hidden">
+    <div className="rounded-lg border shadow-card bg-white dark:bg-[#24284B] dark:border-[#24284B] border-[#e5e7eb] dark:shadow-none overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -96,7 +100,18 @@ export function RibbonLotTable({ lots, onEdit, onDelete, onView }: RibbonLotTabl
                       {getStatusText(lot.status)}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="flex gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2 text-xs border-blue-300 text-blue-900 bg-white/30 hover:bg-blue-50 dark:bg-[#24284B] dark:text-blue-100 dark:border-[#4D519A]"
+                      onClick={() => {
+                        setSelectedLot(lot as any);
+                        setDetailsOpen(true);
+                      }}
+                    >
+                      Ver Detalhes
+                    </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -104,13 +119,6 @@ export function RibbonLotTable({ lots, onEdit, onDelete, onView }: RibbonLotTabl
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="border-border bg-popover">
-                        <DropdownMenuItem 
-                          onClick={() => onView(lot)}
-                          className="hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Visualizar
-                        </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => onEdit(lot)}
                           className="hover:bg-accent hover:text-accent-foreground cursor-pointer"
@@ -133,6 +141,14 @@ export function RibbonLotTable({ lots, onEdit, onDelete, onView }: RibbonLotTabl
             )}
           </TableBody>
         </Table>
+        <RibbonLotDetailsModal
+          open={detailsOpen}
+          onOpenChange={(open) => {
+            setDetailsOpen(open);
+            if (!open) setSelectedLot(null);
+          }}
+          lot={selectedLot}
+        />
       </div>
     </div>
   );

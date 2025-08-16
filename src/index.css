@@ -1,3 +1,45 @@
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 24px 0 #38bdf8cc, 0 2px 16px -2px #1e40af33; }
+  50% { box-shadow: 0 0 48px 8px #2563eb99, 0 2px 32px -2px #38bdf866; }
+  100% { box-shadow: 0 0 24px 0 #38bdf8cc, 0 2px 16px -2px #1e40af33; }
+}
+
+.animate-glow {
+  animation: glow 2.8s ease-in-out infinite;
+}
+@keyframes gradient-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-move {
+  animation: gradient-move 12s ease-in-out infinite;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,114 +51,99 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Multilaser Brand Colors */
-    --background: 0 0% 98%;
-    --foreground: 220 15% 15%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 15%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 15%;
-
-    /* Multilaser Blue Primary */
-    --primary: 214 100% 50%;
+    /* Ribbon Custom Palette - LIGHT */
+    --background: 0 0% 100%; /* branco absoluto */
+    --foreground: 234 35% 22%; /* space-cadet */
+    
+    --card: 237 33% 97%; /* violet-blue muito claro */
+    --card-foreground: 234 35% 22%;
+    
+    --popover: 237 33% 97%;
+    --popover-foreground: 234 35% 22%;
+    
+    --primary: 237 33% 45%; /* violet-blue */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 214 100% 45%;
-
-    /* Multilaser Turquoise Accent */
-    --secondary: 186 100% 42%;
+    --primary-hover: 237 33% 40%;
+    
+    --secondary: 278 18% 54%; /* pomp-and-power */
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 186 100% 37%;
-
-    --muted: 220 15% 96%;
-    --muted-foreground: 220 10% 50%;
-
-    --accent: 186 100% 95%;
-    --accent-foreground: 220 15% 15%;
-
+    --secondary-hover: 278 18% 44%;
+    
+    --muted: 234 35% 96%;
+    --muted-foreground: 234 35% 50%;
+    
+    --accent: 265 23% 39%; /* ultra-violet */
+    --accent-foreground: 234 35% 22%;
+    
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 220 15% 88%;
-    --input: 220 15% 94%;
-    --ring: 214 100% 50%;
-
-    /* Success Colors */
+    
+    --border: 234 35% 88%;
+    --input: 234 35% 94%;
+    --ring: 237 33% 45%;
+    
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-
-    /* Warning Colors */
+    
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(214 100% 50%), hsl(186 100% 42%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 15% 98%));
-
-    /* Shadows */
-    --shadow-elegant: 0 4px 24px -4px hsl(214 100% 50% / 0.2);
-    --shadow-card: 0 2px 16px -2px hsl(220 15% 15% / 0.1);
-
+    
+    --gradient-primary: linear-gradient(135deg, #24284B, #9075A0, #604D7B, #0D0B19, #4D519A);
+    --gradient-card: linear-gradient(145deg, #ffffff, #4D519A11);
+    
+    --shadow-elegant: 0 4px 24px -4px #4D519A22;
+    --shadow-card: 0 2px 16px -2px #24284B11;
+    
     --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 234 35% 22%;
+    --sidebar-primary: 237 33% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 278 18% 54%;
+    --sidebar-accent-foreground: 234 35% 22%;
+    --sidebar-border: 234 35% 88%;
+    --sidebar-ring: 237 33% 45%;
   }
 
   .dark {
     /* Multilaser Dark Theme */
-    --background: 220 25% 8%;
-    --foreground: 0 0% 95%;
-
-    --card: 220 20% 12%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 220 20% 12%;
-    --popover-foreground: 0 0% 95%;
-
-    /* Multilaser Blue Primary - Dark */
-    --primary: 214 100% 60%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 214 100% 55%;
-
-    /* Multilaser Turquoise Accent - Dark */
-    --secondary: 186 100% 50%;
+    /* Ribbon Custom Palette - DARK */
+    --background: 249 39% 7%; /* rich-black */
+    --foreground: 278 18% 90%; /* pomp-and-power, claro */
+    
+    --card: 234 35% 22%; /* space-cadet */
+    --card-foreground: 278 18% 90%;
+    
+    --popover: 234 35% 22%;
+    --popover-foreground: 278 18% 90%;
+    
+    --primary: 4 0% 100%; /* branco para contraste */
+    --primary-foreground: 237 33% 45%;
+    --primary-hover: 265 23% 39%;
+    
+    --secondary: 9075A0ff; /* pomp-and-power */
     --secondary-foreground: 0 0% 100%;
-    --secondary-hover: 186 100% 45%;
-
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 65%;
-
-    --accent: 186 50% 25%;
-    --accent-foreground: 0 0% 95%;
-
+    --secondary-hover: 278 18% 44%;
+    
+    --muted: 234 35% 18%;
+    --muted-foreground: 278 18% 70%;
+    
+    --accent: 265 23% 39%; /* ultra-violet */
+    --accent-foreground: 278 18% 90%;
+    
     --destructive: 0 75% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 220 15% 22%;
-    --input: 220 15% 18%;
-    --ring: 214 100% 60%;
-
-    /* Dark Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(214 100% 60%), hsl(186 100% 50%));
-    --gradient-card: linear-gradient(145deg, hsl(220 20% 12%), hsl(220 15% 15%));
-
-    /* Dark Shadows */
-    --shadow-elegant: 0 4px 24px -4px hsl(214 100% 60% / 0.3);
-    --shadow-card: 0 2px 16px -2px hsl(0 0% 0% / 0.4);
+    
+    --border: 234 35% 15%;
+    --input: 234 35% 18%;
+    --ring: 237 33% 45%;
+    
+    --gradient-primary: linear-gradient(135deg, #24284B, #9075A0, #604D7B, #0D0B19, #4D519A);
+    --gradient-card: linear-gradient(145deg, #24284B, #0D0B19);
+    
+    --shadow-elegant: 0 4px 24px -4px #604D7B44;
+    --shadow-card: 0 2px 16px -2px #0D0B1944;
   }
 }
 

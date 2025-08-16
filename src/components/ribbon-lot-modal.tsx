@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Calendar, Clock } from "lucide-react";
 import { RibbonLotFormData } from "@/types/ribbon-lot";
 
-interface RibbonLotModalProps {
-  onSubmit: (data: RibbonLotFormData) => void;
+type RibbonLotFormDataWithImage = RibbonLotFormData & { imageBase64?: string };
+
+export interface RibbonLotModalProps {
+  onSubmit: (data: RibbonLotFormDataWithImage) => void;
+  lotToEdit?: RibbonLotFormDataWithImage | null;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
+export function RibbonLotModal({ onSubmit, lotToEdit, open: controlledOpen, onOpenChange }: RibbonLotModalProps) {
   const [open, setOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const actualOpen = isControlled ? controlledOpen : open;
+  const setActualOpen = isControlled && onOpenChange ? onOpenChange : setOpen;
   const [formData, setFormData] = useState<RibbonLotFormData>({
     shift: 'ADM',
     ribbonModel: '',
@@ -22,6 +30,32 @@ export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
     lotNumber: '',
     details: ''
   });
+  const [imageBase64, setImageBase64] = useState<string | undefined>(undefined);
+
+  // Preencher dados ao editar
+  useEffect(() => {
+    if (lotToEdit && actualOpen) {
+      setFormData({
+        shift: lotToEdit.shift,
+        ribbonModel: lotToEdit.ribbonModel,
+        quantity: lotToEdit.quantity,
+        problem: lotToEdit.problem,
+        lotNumber: lotToEdit.lotNumber,
+        details: lotToEdit.details,
+      });
+      setImageBase64(lotToEdit.imageBase64);
+    } else if (!actualOpen) {
+      setFormData({
+        shift: 'ADM',
+        ribbonModel: '',
+        quantity: 0,
+        problem: '',
+        lotNumber: '',
+        details: ''
+      });
+      setImageBase64(undefined);
+    }
+  }, [lotToEdit, actualOpen]);
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
   const currentTime = new Date().toLocaleTimeString('pt-BR', { 
@@ -31,7 +65,7 @@ export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({ ...formData, imageBase64 });
     setFormData({
       shift: 'ADM',
       ribbonModel: '',
@@ -40,7 +74,22 @@ export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
       lotNumber: '',
       details: ''
     });
-    setOpen(false);
+    setImageBase64(undefined);
+    setActualOpen(false);
+  };
+
+  // Função para converter imagem em base64
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageBase64(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImageBase64(undefined);
+    }
   };
 
   const handleInputChange = (field: keyof RibbonLotFormData, value: string | number) => {
@@ -51,20 +100,27 @@ export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="gradient-primary hover:opacity-90 shadow-elegant text-white font-semibold">
-          <Plus className="h-4 w-4 mr-2" />
-          Cadastrar Problema
-        </Button>
-      </DialogTrigger>
+    <Dialog open={actualOpen} onOpenChange={setActualOpen}>
+      {!lotToEdit && (
+        <DialogTrigger asChild>
+          <Button
+            className="font-semibold border border-[color:hsl(var(--border))] transition-colors
+              bg-white text-[color:#24284B]
+              hover:bg-[color:#f4f4fa] hover:text-[color:#24284B]
+              dark:gradient-primary dark:text-white dark:border-0 dark:hover:opacity-90 shadow-elegant"
+          >
+            <Plus className="h-4 w-4 mr-2 dark:text-white text-[color:#24284B]" />
+            Cadastrar Problema
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[600px] shadow-card bg-card border-border">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
               <Plus className="h-4 w-4 text-white" />
             </div>
-            Registrar Problema do Ribbon
+            {lotToEdit ? 'Editar Registro do Ribbon' : 'Registrar Problema do Ribbon'}
           </DialogTitle>
         </DialogHeader>
         
@@ -165,6 +221,7 @@ export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
             />
           </div>
 
+
           {/* Detalhes */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">Detalhes Adicionais</Label>
@@ -176,12 +233,26 @@ export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
             />
           </div>
 
+          {/* Anexo de Foto */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-foreground">Anexo de Foto (opcional)</Label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="border-border hover:border-ring transition-colors"
+            />
+            {imageBase64 && (
+              <img src={imageBase64} alt="Pré-visualização" className="mt-2 max-h-32 rounded shadow" />
+            )}
+          </div>
+
           {/* Botões */}
           <div className="flex justify-end gap-3 pt-4 border-t border-border">
             <Button 
               type="button" 
               variant="outline" 
-              onClick={() => setOpen(false)}
+              onClick={() => (typeof setActualOpen === 'function' ? setActualOpen(false) : setOpen(false))}
               className="border-border hover:bg-muted"
             >
               Cancelar
@@ -190,11 +261,12 @@ export function RibbonLotModal({ onSubmit }: RibbonLotModalProps) {
               type="submit" 
               className="gradient-primary hover:opacity-90 shadow-elegant text-white font-semibold"
             >
-              Registrar Problema
+              {lotToEdit ? 'Salvar Alterações' : 'Registrar Problema'}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
+
   );
 }
