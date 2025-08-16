@@ -154,12 +154,6 @@ export function RibbonLotControl() {
               <ThemeToggle />
               <div className="[&>button]:bg-[#4D519A] [&>button]:text-white dark:[&>button]:bg-[#9075A0] dark:[&>button]:text-white">
                 <RibbonLotModal onSubmit={handleCreateLot} />
-                <RibbonLotModal
-                  onSubmit={handleEditSubmit}
-                  lotToEdit={lotToEdit}
-                  open={editModalOpen}
-                  onOpenChange={setEditModalOpen}
-                />
               </div>
             </div>
           </div>
